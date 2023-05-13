@@ -104,5 +104,50 @@ function changeDirection(event) {
 function updateTimer() { elapsedTime = Math.floor((Date.now() - startTime) / 1000); timerElem.textContent = elapsedTime; }
 
 document.addEventListener('keydown', changeDirection);
+// 新增：监听触摸事件
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
+
+// 新增：添加处理触摸事件的函数和变量
+let touchStartX = null;
+let touchStartY = null;
+
+function handleTouchStart(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}
+
+function handleTouchMove(event) {
+    if (!touchStartX || !touchStartY) {
+        return;
+    }
+
+    let touchEndX = event.touches[0].clientX;
+    let touchEndY = event.touches[0].clientY;
+    let touchDeltaX = touchStartX - touchEndX;
+    let touchDeltaY = touchStartY - touchEndY;
+
+    if (Math.abs(touchDeltaX) > Math.abs(touchDeltaY)) {
+        // 左右滑动
+        if (touchDeltaX > 0) {
+            changeDirection({key: "ArrowLeft"});
+        } else {
+            changeDirection({key: "ArrowRight"});
+        }
+    } else {
+        // 上下滑动
+        if (touchDeltaY > 0) {
+            changeDirection({key: "ArrowUp"});
+        } else {
+            changeDirection({key: "ArrowDown"});
+        }
+    }
+
+    // 重置滑动状态
+    touchStartX = null;
+    touchStartY = null;
+}
+
+
 init();
 gameLoop();
